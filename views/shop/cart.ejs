@@ -1,0 +1,39 @@
+<%- include('../includes/head.ejs') %>
+    </head>
+
+
+
+    <body>
+        <%- include('../includes/navigation.ejs') %>
+            <main>
+                <% if (cartProducts.length> 0) { %>
+                    <ul>
+                        <% for( let i=0; i < cartProducts.length; i++ ) { %>
+                            <li>
+
+                                <p>
+                                    <%= cartProducts[i].title %> (<%= cartProducts[i].quantity %>)
+                                </p>
+                                <form method="POST" action="/cart-delete-item">
+                                    <input type="hidden" name="productID" value="<%= cartProducts[i]._id %>">
+                                    <button class="btn" type="submit">Delete</button>
+                                </form>
+
+
+                            </li>
+                            <% } %>
+                    </ul>
+                    <hr>
+                    <h1>
+                        Total: <%=cartTotal.toFixed(2) %> $</h1>
+                    <hr>
+                    <form action="/create-order" method="POST">
+                        <button class="btn" type="submit">Order Now</button>
+                    </form>
+
+                    <% }else{ %>
+                        <h1>No Products in Cart!</h1>
+                        <%}%>
+
+            </main>
+            <%- include('../includes/end.ejs') %>
