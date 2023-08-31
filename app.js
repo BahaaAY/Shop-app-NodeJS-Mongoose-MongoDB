@@ -2,10 +2,12 @@ const path = require("path");
 
 const express = require("express");
 const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
+
+const username = require("./util/credentials").username;
+const password = require("./util/credentials").password;
 
 const errorController = require("./controllers/error");
-
-const mongoConnect = require("./util/database").mongoConnect;
 
 const User = require("./models/user");
 
@@ -45,8 +47,11 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-mongoConnect
-  .then(() => {
+mongoose
+  .connect(
+    `mongodb+srv://${username}:${password}@cluster0.o8mxmhh.mongodb.net/shop?retryWrites=true&w=majority`
+  )
+  .then((result) => {
     app.listen(3000);
   })
   .catch((err) => {
