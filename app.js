@@ -22,25 +22,25 @@ const shopRoutes = require("./routes/shop");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use((req, res, next) => {
-  User.findById("64ee14bdea224dad6ff2d658")
-    .then((user) => {
-      if (user) {
-        console.log("User: ", user);
-        user = new User(user.username, user.email, user.cart, user._id);
-        req.user = user;
-        next();
-      } else {
-        const user = new User("Bahaa", "bahaa@gmail.com");
-        user.save();
-        req.user = user;
-        next();
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-});
+// app.use((req, res, next) => {
+//   User.findById("64ee14bdea224dad6ff2d658")
+//     .then((user) => {
+//       if (user) {
+//         console.log("User: ", user);
+//         user = new User(user.username, user.email, user.cart, user._id);
+//         req.user = user;
+//         next();
+//       } else {
+//         const user = new User("Bahaa", "bahaa@gmail.com");
+//         user.save();
+//         req.user = user;
+//         next();
+//       }
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// });
 
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
