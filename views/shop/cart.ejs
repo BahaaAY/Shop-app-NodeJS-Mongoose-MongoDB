@@ -12,10 +12,10 @@
                             <li>
 
                                 <p>
-                                    <%= cartItems[i].productId.title %> (<%= cartItems[i].quantity %>)
+                                    <%= cartItems[i].product.title %> (<%= cartItems[i].quantity %>)
                                 </p>
                                 <form method="POST" action="/cart-delete-item">
-                                    <input type="hidden" name="productId" value="<%= cartItems[i].productId._id %>">
+                                    <input type="hidden" name="productId" value="<%= cartItems[i].product._id %>">
                                     <button class="btn" type="submit">Delete</button>
                                 </form>
 

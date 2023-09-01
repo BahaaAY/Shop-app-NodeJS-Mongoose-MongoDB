@@ -14,9 +14,9 @@
                         </div>
                         <div class="card__content ">
                             <ul>
-                                <% order.items.forEach(product => { %>
+                                <% order.items.forEach(item => { %>
                                 <li>
-                                    <%= product.title %> (<%= product.quantity %>) x $ <%= product.price %>
+                                    <%= item.product.title %> (<%= item.quantity %>) x $ <%= item.product.price %>
                                 </li>
                                 <% }) %>
                             </ul>

@@ -45,6 +45,7 @@ exports.getCart = (req, res, next) => {
   req.user
     .getCart()
     .then((cart) => {
+      // console.log("Cart Items: ", cart.items);
       res.render("shop/cart", {
         path: "/cart",
         pageTitle: "Your Cart",
@@ -89,6 +90,7 @@ exports.getOrders = (req, res, next) => {
   req.user
     .getOrders()
     .then((orders) => {
+      console.log("Orders:adssda ", orders[0].items[0]);
       res.render("shop/orders", {
         path: "/orders",
         pageTitle: "Your Orders",
