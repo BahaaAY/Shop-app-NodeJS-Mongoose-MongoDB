@@ -1,7 +1,7 @@
-const calculateTotal = (products) => {
+const calculateTotal = (cartItems) => {
   let total = 0;
-  products.forEach((product) => {
-    total += product.price * product.cartItem.quantity;
+  cartItems.forEach((cartItem) => {
+    total += cartItem.productId.price * cartItem.quantity;
   });
 
   return total;

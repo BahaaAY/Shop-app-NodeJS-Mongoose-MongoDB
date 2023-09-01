@@ -19,6 +19,40 @@ const userSchema = new Schema({
   },
 });
 
+userSchema.methods.addToCart = function (product) {
+  this.cart = this.cart ? this.cart : { items: [] };
+  const updatedCartItems = [...this.cart.items];
+  const cartProductIndex = this.cart.items.findIndex((cartProduct) => {
+    return cartProduct.productId.toString() === product._id.toString();
+  });
+  if (cartProductIndex >= 0) {
+    //Product Exists in Cart
+    updatedCartItems[cartProductIndex].quantity += 1;
+  } else {
+    //Product Does Not Exist in Cart
+    updatedCartItems.push({
+      productId: product._id,
+      quantity: 1,
+    });
+  }
+  const updatedCart = { items: updatedCartItems };
+  this.cart = updatedCart;
+
+  return this.save();
+};
+
+userSchema.methods.getCart = function () {
+  // Get Products in Cart
+  return this.cart.populate("items.productId");
+};
+userSchema.methods.removeFromCart = function (productId) {
+  var updatedCartItems = [...this.cart.items];
+  updatedCartItems = updatedCartItems.filter((item) => {
+    return item.productId.toString() !== productId.toString();
+  });
+  this.cart.items = updatedCartItems;
+  return this.save();
+};
 module.exports = mongoose.model("User", userSchema);
 
 // const mongodb = require("mongodb");
@@ -38,30 +72,7 @@ module.exports = mongoose.model("User", userSchema);
 //     return db.collection("users").insertOne(this);
 //   }
 //   addToCart(product) {
-//     const db = getDb();
-//     this.cart = this.cart ? this.cart : { items: [] };
-//     const updatedCartItems = [...this.cart.items];
-//     const cartProductIndex = this.cart.items.findIndex((cartProduct) => {
-//       return cartProduct.productID.toString() === product._id.toString();
-//     });
-//     if (cartProductIndex >= 0) {
-//       //Product Exists in Cart
-//       updatedCartItems[cartProductIndex].quantity += 1;
-//     } else {
-//       //Product Does Not Exist in Cart
-//       updatedCartItems.push({
-//         productID: new mongodb.ObjectId(product._id),
-//         quantity: 1,
-//       });
-//     }
-//     const updatedCart = { items: updatedCartItems };
 
-//     return db
-//       .collection("users")
-//       .updateOne(
-//         { _id: new mongodb.ObjectId(this._id) },
-//         { $set: { cart: updatedCart } }
-//       );
 //   }
 
 //   deleteCartItem(productID) {
@@ -80,35 +91,7 @@ module.exports = mongoose.model("User", userSchema);
 //   }
 
 //   getCart() {
-//     const db = getDb();
-//     // Get Products in Cart
-//     const productsIDs = this.cart.items.map((item) => {
-//       return item.productID;
-//     });
-//     return db
-//       .collection("products")
-//       .find({ _id: { $in: productsIDs } })
-//       .toArray()
-//       .then((products) => {
-//         var total = 0;
 
-//         // map products to cart items: Product ==> CarItem{Product{_id,title,description,price,imgUrl}, Quantity}
-//         let cartProducts = products.map((product) => {
-//           return {
-//             ...product,
-//             quantity: this.cart.items.find((item) => {
-//               return item.productID.toString() === product._id.toString();
-//             }).quantity,
-//           };
-//         });
-
-//         // calculate total price
-//         cartProducts.forEach((product) => {
-//           total += product.price * product.quantity;
-//         });
-//         return new Cart(cartProducts, total);
-//       })
-//       .catch((err) => console.log("Error Getting Cart Products: ", err));
 //   }
 //   addOrder() {
 //     const db = getDb();

@@ -45,12 +45,11 @@ exports.getCart = (req, res, next) => {
   req.user
     .getCart()
     .then((cart) => {
-      //console.log("UserCart: ", cart);
       res.render("shop/cart", {
         path: "/cart",
         pageTitle: "Your Cart",
-        cartProducts: cart.items,
-        cartTotal: cart.totalPrice,
+        cartItems: cart.items,
+        cartTotal: calculateTotal(cart.items),
       });
     })
     .catch((err) => {
@@ -60,12 +59,7 @@ exports.getCart = (req, res, next) => {
 
 exports.postAddToCart = (req, res, next) => {
   const productID = req.body.productID;
-  const user = new User(
-    req.user.username,
-    req.user.email,
-    req.user.cart,
-    req.user._id
-  );
+  const user = req.user;
   Product.findById(productID)
     .then((product) => {
       return user.addToCart(product);
@@ -78,12 +72,12 @@ exports.postAddToCart = (req, res, next) => {
 };
 
 exports.postDeleteCartItem = (req, res, next) => {
-  const productID = req.body.productID;
-  console.log("ProductID del: ", productID);
+  const productId = req.body.productId;
+  console.log("ProductID del: ", productId);
   req.user
-    .deleteCartItem(productID)
+    .removeFromCart(productId)
     .then((result) => {
-      console.log("Product Deleted from Cart!: ", productID);
+      console.log("Product Deleted from Cart!: ", productId);
       res.redirect("/cart");
     })
     .catch((err) => {
