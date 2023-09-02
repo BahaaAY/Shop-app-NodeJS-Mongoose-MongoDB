@@ -1,37 +1,29 @@
 <%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href="/css/orders.css">
     </head>
-
     <body>
         <%- include('../includes/navigation.ejs') %>
         <main>
-            <% if (orders.length<=0) { %>
-            <h1>Nothing there!</h1>
-            <% }else{ %>
-                <% orders.forEach(order => {%>
-                    <div class="card">
-                        <div class="card__header">
-                            Order ID: <%= order._id %>
-                        </div>
-                        <div class="card__content ">
-                            <ul>
-                                <% order.items.forEach(item => { %>
-                                <li>
-                                    <%= item.product.title %> (<%= item.quantity %>) x $ <%= item.product.price %>
-                                </li>
-                                <% }) %>
+            <% if (orders.length <= 0) { %>
+                <h1>Nothing there!</h1>
+            <% } else { %>
+                <ul class="orders">
+                    <% orders.forEach(order => { %>
+                        <li class="orders__item">
+                            <h1>Order - # <%= order._id %></h1>
+                            <ul class="orders__products">
+                                <% order.items.forEach(p => { %>
+                                    <li class="orders__products-item"><%= p.product.title %> (<%= p.quantity %>) x $ <%= p.product.price %></li>
+                                <% }); %>
                             </ul>
-                        </div>
-                        <div class="card__content ">
-                            <strong>Total Price: $ <%= order.totalPrice %></strong>
-                        </div>
-                    </div>
-                    <hr>
-               <% });  %>
-                
+                            <h1>
+                                Total Price: $ <%= order.totalPrice %>
+                            </h1>
+                        </li>
+                    <% }); %>
 
-
-                <%}%>
-            
-            
+                </ul>
+            <% } %>
         </main>
+   
         <%- include('../includes/end.ejs') %>

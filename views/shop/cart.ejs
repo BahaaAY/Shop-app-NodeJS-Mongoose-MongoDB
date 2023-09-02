@@ -1,22 +1,23 @@
 <%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href="/css/cart.css">
     </head>
-
-
-
     <body>
         <%- include('../includes/navigation.ejs') %>
             <main>
                 <% if (cartItems.length> 0) { %>
-                    <ul>
+                    <ul class="cart__item-list">
                         <% for( let i=0; i < cartItems.length; i++ ) { %>
-                            <li>
+                            <li class="cart__item">
 
-                                <p>
-                                    <%= cartItems[i].product.title %> (<%= cartItems[i].quantity %>)
-                                </p>
+                                <h1>
+                                    <%= cartItems[i].product.title %> 
+                                </h1>
+                                <h2>
+                                    Quantity: <%= cartItems[i].quantity %>
+                                </h2>
                                 <form method="POST" action="/cart-delete-item">
                                     <input type="hidden" name="productId" value="<%= cartItems[i].product._id %>">
-                                    <button class="btn" type="submit">Delete</button>
+                                    <button class="btn danger" type="submit">Delete</button>
                                 </form>
 
 
@@ -27,9 +28,12 @@
                     <h1>
                         Total: <%=cartTotal.toFixed(2) %> $</h1>
                     <hr>
-                    <form action="/create-order" method="POST">
-                        <button class="btn" type="submit">Order Now</button>
-                    </form>
+                    <div class="centered">
+                        <form action="/create-order" method="POST">
+                            <button class="btn" type="submit">Order Now</button>
+                        </form>
+                    </div>
+                    
 
                     <% }else{ %>
                         <h1>No Products in Cart!</h1>
