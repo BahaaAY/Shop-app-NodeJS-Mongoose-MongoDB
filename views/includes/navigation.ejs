@@ -11,6 +11,7 @@
           >Products</a
         >
       </li>
+      <% if (isLoggedIn) { %>
       <li class="main-header__item">
         <a class="<%= path === '/cart' ? 'active' : '' %>" href="/cart">Cart</a>
       </li>
@@ -19,21 +20,36 @@
           >Orders</a
         >
       </li>
-      <!-- <li class="main-header__item">
-                <a class="<%= path === '/admin/add-product' ? 'active' : '' %>" href="/admin/add-product">Add Product
-                </a>
-            </li>
-            <li class="main-header__item">
-                <a class="<%= path === '/admin/products' ? 'active' : '' %>" href="/admin/products">Admin Products
-                </a>
-            </li> -->
+      <li class="main-header__item">
+        <a
+          class="<%= path === '/admin/add-product' ? 'active' : '' %>"
+          href="/admin/add-product"
+          >Add Product
+        </a>
+      </li>
+      <li class="main-header__item">
+        <a
+          class="<%= path === '/admin/products' ? 'active' : '' %>"
+          href="/admin/products"
+          >Admin Products
+        </a>
+      </li>
+      <% } %>
     </ul>
     <ul class="main-header__item-list">
+      <% if (!isLoggedIn) { %>
       <li class="main-header__item">
         <a class="<%= path === '/login' ? 'active' : '' %>" href="/login"
           >Login</a
         >
       </li>
+      <% } else { %>
+      <li class="main-header__item">
+        <form method="POST" action="/logout">
+          <button type="submit">Logout</button>
+        </form>
+      </li>
+      <% } %>
     </ul>
   </nav>
 </header>
