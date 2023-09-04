@@ -45,29 +45,29 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-  User.findById(req.session.user.userId)
-    .then((user) => {
-      if (!user) {
-        res.redirect("/login");
-      } else {
-        user
-          .getCart()
-          .then((cart) => {
-            // console.log("Cart Items: ", cart.items);
-            res.render("shop/cart", {
-              path: "/cart",
-              pageTitle: "Your Cart",
-              cartItems: cart.items,
-              cartTotal: calculateTotal(cart.items),
-              isLoggedIn: req.session.isLoggedIn,
-            });
-          })
-          .catch((err) => {
-            console.log("Error Getting Cart!: ", err);
+  if (req.session.isLoggedIn) {
+    console.log("User: ", req.user);
+    let user = req.user;
+    if (!user) {
+      res.redirect("/login");
+    } else {
+      user
+        .getCart()
+        .then((cart) => {
+          // console.log("Cart Items: ", cart.items);
+          res.render("shop/cart", {
+            path: "/cart",
+            pageTitle: "Your Cart",
+            cartItems: cart.items,
+            cartTotal: calculateTotal(cart.items),
+            isLoggedIn: req.session.isLoggedIn,
           });
-      }
-    })
-    .catch((err) => console.log(err));
+        })
+        .catch((err) => {
+          console.log("Error Getting Cart!: ", err);
+        });
+    }
+  }
 };
 
 exports.postAddToCart = (req, res, next) => {
@@ -75,6 +75,7 @@ exports.postAddToCart = (req, res, next) => {
   const user = req.user;
   Product.findById(productID)
     .then((product) => {
+      console.log("Product Found: ", product);
       return user.addToCart(product);
     })
     .then((result) => {

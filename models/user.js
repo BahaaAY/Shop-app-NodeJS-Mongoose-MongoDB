@@ -25,7 +25,10 @@ const userSchema = new Schema({
 userSchema.methods.addToCart = function (product) {
   this.cart = this.cart ? this.cart : { items: [] };
   const updatedCartItems = [...this.cart.items];
+
   const cartProductIndex = this.cart.items.findIndex((cartProduct) => {
+    console.log("Cart Product: ", cartProduct.product.toString());
+    console.log("Product: ", product._id.toString());
     return cartProduct.product.toString() === product._id.toString();
   });
   if (cartProductIndex >= 0) {
@@ -40,7 +43,6 @@ userSchema.methods.addToCart = function (product) {
   }
   const updatedCart = { items: updatedCartItems };
   this.cart = updatedCart;
-
   return this.save();
 };
 

@@ -40,18 +40,20 @@ app.use(
   })
 );
 
-// app.use((req, res, next) => {
-//   console.log("Url:", req.url);
-//   User.findById("64f17e9f4d00f5d3f3c37754")
-//     .then((user) => {
-//       // console.log("User: ", user);
-//       req.user = user;
-//       next();
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//     });
-// });
+app.use((req, res, next) => {
+  console.log("Session:", req.session);
+  if (req.session.isLoggedIn) {
+    console.log("Url:", req.url);
+    User.findById(req.session.user._id)
+      .then((user) => {
+        req.user = user;
+        next();
+      })
+      .catch((err) => {});
+  } else {
+    next();
+  }
+});
 
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
