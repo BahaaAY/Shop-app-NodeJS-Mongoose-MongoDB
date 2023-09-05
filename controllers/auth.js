@@ -1,6 +1,20 @@
 const bcrypt = require("bcryptjs");
+
+const nodemailer = require("nodemailer");
+
 const User = require("../models/user");
 
+const mailTrapUsername = require("../util/credentials").mailTrapUsername;
+const mailTrapPassword = require("../util/credentials").mailTrapPassword;
+const transporter = nodemailer.createTransport({
+  host: "smtp.mailtrap.io",
+  port: 587,
+  secure: false,
+  auth: {
+    user: mailTrapUsername,
+    pass: mailTrapPassword,
+  },
+});
 exports.getSignup = (req, res, next) => {
   let message = req.flash("error");
   if (message.length > 0) {
@@ -37,6 +51,12 @@ exports.postSignup = (req, res, next) => {
         })
         .then((result) => {
           res.redirect("/login");
+          return transporter.sendMail({
+            to: email,
+            from: "bahaa-ay-shop@email.com",
+            subject: "Signup succeeded!",
+            html: "<h1>You successfully signed up!</h1>",
+          });
         })
         .catch((err) => {
           console.log("Error while hashing the password: ", err);
