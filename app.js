@@ -1,11 +1,14 @@
-const path = require("path");
-
 const express = require("express");
+const path = require("path");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
 
+const csrfSync = require("csrf-sync").csrfSync;
+const { csrfSynchronisedProtection } = csrfSync({
+  getTokenFromRequest: (req) => req.body.csrfToken,
+});
 const username = require("./util/credentials").username;
 const password = require("./util/credentials").password;
 
@@ -39,7 +42,13 @@ app.use(
     saveUninitialized: false,
   })
 );
+app.use(csrfSynchronisedProtection);
 
+app.use((req, res, next) => {
+  res.locals.isLoggedIn = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken(true);
+  next();
+});
 app.use((req, res, next) => {
   console.log("Session:", req.session);
   if (req.session.isLoggedIn) {
@@ -53,6 +62,11 @@ app.use((req, res, next) => {
   } else {
     next();
   }
+});
+app.use((req, res, next) => {
+  res.locals.isLoggedIn = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+  next();
 });
 
 app.use("/admin", adminRoutes);

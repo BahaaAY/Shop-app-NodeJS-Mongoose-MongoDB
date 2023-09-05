@@ -33,6 +33,7 @@
                                     </form>
                                     <form action="/admin/delete-product" method="POST">
                                         <input type="hidden" name="productID" value="<%= product._id %>">
+                                        <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
                                         <button class="btn" type="submit">Delete</button>
                                     </form>
 
