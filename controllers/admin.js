@@ -8,7 +8,6 @@ exports.getAddProduct = (req, res, next) => {
     formsCSS: true,
     productCSS: true,
     activeAddProduct: true,
-    isLoggedIn: req.session.isLoggedIn,
   });
 };
 //Done with MongoDB
@@ -48,7 +47,6 @@ exports.getEditProduct = (req, res, next) => {
             formsCSS: true,
             productCSS: true,
             product: product,
-            isLoggedIn: req.session.isLoggedIn,
           });
         } else {
           res.redirect("/");

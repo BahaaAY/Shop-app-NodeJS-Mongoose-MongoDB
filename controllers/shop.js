@@ -11,7 +11,6 @@ exports.getProducts = (req, res, next) => {
         prods: products,
         pageTitle: "All Products",
         path: "/products",
-        isLoggedIn: req.session.isLoggedIn,
       });
     })
     .catch((err) => console.log("Error Fetch All:", err));
@@ -25,7 +24,6 @@ exports.getProduct = (req, res, next) => {
         pageTitle: product.title,
         path: "/products",
         product: product,
-        isLoggedIn: req.session.isLoggedIn,
       });
     })
     .catch((err) => console.log("Error Fetch One:", err));
@@ -38,7 +36,6 @@ exports.getIndex = (req, res, next) => {
         prods: products,
         pageTitle: "Shop",
         path: "/",
-        isLoggedIn: req.session.isLoggedIn,
       });
     })
     .catch((err) => console.log("Error Fetch All:", err));
@@ -55,7 +52,6 @@ exports.getCart = (req, res, next) => {
         pageTitle: "Your Cart",
         cartItems: cart.items,
         cartTotal: calculateTotal(cart.items),
-        isLoggedIn: req.session.isLoggedIn,
       });
     })
     .catch((err) => {
@@ -95,9 +91,10 @@ exports.getOrders = (req, res, next) => {
   req.user
     .getOrders()
     .then((orders) => {
+      if (!orders) {
+      }
       console.log("Orders:adssda ", orders[0].items[0]);
       res.render("shop/orders", {
-        isLoggedIn: req.session.isLoggedIn,
         path: "/orders",
         pageTitle: "Your Orders",
         orders: orders,

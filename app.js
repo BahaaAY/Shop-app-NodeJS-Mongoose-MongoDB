@@ -3,6 +3,7 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const session = require("express-session");
+const flash = require("connect-flash");
 const MongoDBStore = require("connect-mongodb-session")(session);
 
 const csrfSync = require("csrf-sync").csrfSync;
@@ -49,8 +50,9 @@ app.use((req, res, next) => {
   res.locals.csrfToken = req.csrfToken(true);
   next();
 });
+app.use(flash());
 app.use((req, res, next) => {
-  console.log("Session:", req.session);
+  // console.log("Session:", req.session);
   if (req.session.isLoggedIn) {
     console.log("Url:", req.url);
     User.findById(req.session.user._id)

@@ -66,7 +66,7 @@ userSchema.methods.addOrder = function () {
       let order = new Order({
         user: {
           userId: this,
-          username: this.username,
+          email: this.email,
         },
         items: cart.items,
         totalPrice: calculateTotal(cart.items),
