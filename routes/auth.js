@@ -1,11 +1,12 @@
 const express = require("express");
+const { query } = require("express-validator");
 
 const authController = require("../controllers/auth");
 
 const router = express.Router();
 router.get("/signup", authController.getSignup);
 
-router.post("/signup", authController.postSignup);
+router.post("/signup", query("email").isEmail(), authController.postSignup);
 
 router.get("/login", authController.getLogin);
 

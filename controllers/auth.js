@@ -2,6 +2,8 @@ const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 
+const { validationResult } = require("express-validator");
+
 const User = require("../models/user");
 
 const mailTrapUsername = require("../util/credentials").mailTrapUsername;
@@ -33,38 +35,50 @@ exports.postSignup = (req, res, next) => {
   const password = req.body.password.trim();
   const confirmPassword = req.body.confirmPassword.trim();
 
-  User.findOne({ email: email })
-    .then((userDoc) => {
-      if (userDoc) {
-        req.flash("error", "Email already exists!");
-        return res.redirect("/signup");
-      }
-      return bcrypt
-        .hash(password, 12)
-        .then((hashedPassword) => {
-          const user = new User({
-            email: email,
-            password: hashedPassword,
-            cart: { items: [] },
-          });
-          return user.save();
-        })
-        .then((result) => {
-          res.redirect("/login");
-          return transporter.sendMail({
-            to: email,
-            from: "bahaa-ay-shop@email.com",
-            subject: "Signup succeeded!",
-            html: "<h1>You successfully signed up!</h1>",
-          });
-        })
-        .catch((err) => {
-          console.log("Error while hashing the password: ", err);
-        });
-    })
-    .catch((err) => {
-      console.log(err);
+  const result = validationResult(req);
+  if (!result.isEmpty()) {
+    // Email is invalid
+    const message = result.array()[0].msg;
+    return res.status(422).render("auth/signup", {
+      path: "/signup",
+      pageTitle: "Signup",
+      errorMessage: message,
     });
+  } else {
+    // Email is valid
+    User.findOne({ email: email })
+      .then((userDoc) => {
+        if (userDoc) {
+          req.flash("error", "Email already exists!");
+          return res.redirect("/signup");
+        }
+        return bcrypt
+          .hash(password, 12)
+          .then((hashedPassword) => {
+            const user = new User({
+              email: email,
+              password: hashedPassword,
+              cart: { items: [] },
+            });
+            return user.save();
+          })
+          .then((result) => {
+            res.redirect("/login");
+            return transporter.sendMail({
+              to: email,
+              from: "bahaa-ay-shop@email.com",
+              subject: "Signup succeeded!",
+              html: "<h1>You successfully signed up!</h1>",
+            });
+          })
+          .catch((err) => {
+            console.log("Error while hashing the password: ", err);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 };
 exports.getLogin = (req, res, next) => {
   let errorMessage = req.flash("error");
