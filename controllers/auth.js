@@ -28,6 +28,11 @@ exports.getSignup = (req, res, next) => {
     path: "/signup",
     pageTitle: "Signup",
     errorMessage: message,
+    oldInput: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
   });
 };
 exports.postSignup = (req, res, next) => {
@@ -43,6 +48,11 @@ exports.postSignup = (req, res, next) => {
       path: "/signup",
       pageTitle: "Signup",
       errorMessage: message,
+      oldInput: {
+        email: email,
+        password: password,
+        confirmPassword: confirmPassword,
+      },
     });
   } else {
     // Data is valid
@@ -88,6 +98,10 @@ exports.getLogin = (req, res, next) => {
     pageTitle: "Login",
     errorMessage: errorMessage,
     userMessage: userMessage,
+    oldInput: {
+      email: "",
+      password: "",
+    },
   });
 };
 exports.postLogin = (req, res, next) => {
@@ -102,6 +116,10 @@ exports.postLogin = (req, res, next) => {
       pageTitle: "Login",
       errorMessage: message,
       userMessage: null,
+      oldInput: {
+        email: email,
+        password: password,
+      },
     });
   } else {
     User.findOne({ email: email })
