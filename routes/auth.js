@@ -15,6 +15,7 @@ router.post(
     body("email")
       .isEmail()
       .withMessage("Please enter a valid email!")
+      .normalizeEmail()
       .custom((value, { req }) => {
         return User.findOne({ email: value }).then((userDoc) => {
           if (userDoc) {
@@ -24,13 +25,16 @@ router.post(
       }),
     body("password")
       .isLength({ min: 8 })
-      .withMessage("Please enter a valid password!"),
-    body("confirmPassword").custom((value, { req }) => {
-      if (value !== req.body.password) {
-        throw new Error("Passwords have to match!");
-      }
-      return true;
-    }),
+      .withMessage("Please enter a valid password!")
+      .trim(),
+    body("confirmPassword")
+      .custom((value, { req }) => {
+        if (value !== req.body.password) {
+          throw new Error("Passwords have to match!");
+        }
+        return true;
+      })
+      .trim(),
   ],
 
   authController.postSignup
@@ -41,10 +45,14 @@ router.get("/login", authController.getLogin);
 router.post(
   "/login",
   [
-    body("email").isEmail().withMessage("Please enter a valid email!"),
+    body("email")
+      .isEmail()
+      .withMessage("Please enter a valid email!")
+      .normalizeEmail(),
     body("password")
       .isLength({ min: 8 })
-      .withMessage("Please enter a valid password!"),
+      .withMessage("Please enter a valid password!")
+      .trim(),
   ],
   authController.postLogin
 );

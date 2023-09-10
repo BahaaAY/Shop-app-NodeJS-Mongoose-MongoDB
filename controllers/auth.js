@@ -33,6 +33,7 @@ exports.getSignup = (req, res, next) => {
       password: "",
       confirmPassword: "",
     },
+    validationErrors: [],
   });
 };
 exports.postSignup = (req, res, next) => {
@@ -53,6 +54,7 @@ exports.postSignup = (req, res, next) => {
         password: password,
         confirmPassword: confirmPassword,
       },
+      validationErrors: result.array(),
     });
   } else {
     // Data is valid
@@ -102,6 +104,7 @@ exports.getLogin = (req, res, next) => {
       email: "",
       password: "",
     },
+    validationErrors: [],
   });
 };
 exports.postLogin = (req, res, next) => {
@@ -120,13 +123,23 @@ exports.postLogin = (req, res, next) => {
         email: email,
         password: password,
       },
+      validationErrors: result.array(),
     });
   } else {
     User.findOne({ email: email })
       .then((user) => {
         if (!user) {
-          req.flash("error", "Invalid email or password.");
-          return res.redirect("/login");
+          return res.status(422).render("auth/login", {
+            path: "/login",
+            pageTitle: "Login",
+            errorMessage: "Invalid email or password",
+            userMessage: null,
+            oldInput: {
+              email: email,
+              password: password,
+            },
+            validationErrors: [],
+          });
         }
         bcrypt
           .compare(password, user.password)
@@ -139,8 +152,24 @@ exports.postLogin = (req, res, next) => {
                 res.redirect("/");
               });
             } else {
-              req.flash("error", "Invalid email or password.");
-              return res.redirect("/login");
+              return res.status(422).render("auth/login", {
+                path: "/login",
+                pageTitle: "Login",
+                errorMessage: "Invalid email or password",
+                userMessage: null,
+                oldInput: {
+                  email: email,
+                  password: password,
+                },
+                validationErrors: [
+                  {
+                    path: "email",
+                  },
+                  {
+                    path: "password",
+                  },
+                ],
+              });
             }
           })
           .catch((err) => {
