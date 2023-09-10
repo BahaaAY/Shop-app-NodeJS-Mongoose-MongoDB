@@ -38,7 +38,16 @@ router.post(
 
 router.get("/login", authController.getLogin);
 
-router.post("/login", authController.postLogin);
+router.post(
+  "/login",
+  [
+    body("email").isEmail().withMessage("Please enter a valid email!"),
+    body("password")
+      .isLength({ min: 8 })
+      .withMessage("Please enter a valid password!"),
+  ],
+  authController.postLogin
+);
 
 router.post("/logout", authController.postLogout);
 

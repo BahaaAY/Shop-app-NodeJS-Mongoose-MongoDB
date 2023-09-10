@@ -93,34 +93,47 @@ exports.getLogin = (req, res, next) => {
 exports.postLogin = (req, res, next) => {
   const email = req.body.email.trim();
   const password = req.body.password.trim();
+  const result = validationResult(req);
 
-  User.findOne({ email: email })
-    .then((user) => {
-      if (!user) {
-        req.flash("error", "Invalid email or password.");
-        return res.redirect("/login");
-      }
-      bcrypt
-        .compare(password, user.password)
-        .then((doMatch) => {
-          if (doMatch) {
-            req.session.user = user;
-            req.session.isLoggedIn = true;
-            return req.session.save((err) => {
-              console.log(err);
-              res.redirect("/");
-            });
-          } else {
-            req.flash("error", "Invalid email or password.");
-            return res.redirect("/login");
-          }
-        })
-        .catch((err) => {
-          console.log(err);
+  if (!result.isEmpty()) {
+    const message = result.array()[0].msg;
+    res.status(422).render("auth/login", {
+      path: "/login",
+      pageTitle: "Login",
+      errorMessage: message,
+      userMessage: null,
+    });
+  } else {
+    User.findOne({ email: email })
+      .then((user) => {
+        if (!user) {
+          req.flash("error", "Invalid email or password.");
           return res.redirect("/login");
-        });
-    })
-    .catch((err) => {});
+        }
+        bcrypt
+          .compare(password, user.password)
+          .then((doMatch) => {
+            if (doMatch) {
+              req.session.user = user;
+              req.session.isLoggedIn = true;
+              return req.session.save((err) => {
+                console.log(err);
+                res.redirect("/");
+              });
+            } else {
+              req.flash("error", "Invalid email or password.");
+              return res.redirect("/login");
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+            return res.redirect("/login");
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 };
 exports.postLogout = (req, res, next) => {
   req.session.destroy((err) => {
