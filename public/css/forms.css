@@ -26,3 +26,7 @@
   border-color: #ff0000;
   background-color: #ffcdd2;
 }
+.form-control textarea.invalid {
+  border-color: #ff0000;
+  background-color: #ffcdd2;
+}

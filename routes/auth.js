@@ -15,7 +15,7 @@ router.post(
     body("email")
       .isEmail()
       .withMessage("Please enter a valid email!")
-      .normalizeEmail()
+      .normalizeEmail({ gmail_remove_dots: false })
       .custom((value, { req }) => {
         return User.findOne({ email: value }).then((userDoc) => {
           if (userDoc) {
@@ -48,7 +48,7 @@ router.post(
     body("email")
       .isEmail()
       .withMessage("Please enter a valid email!")
-      .normalizeEmail(),
+      .normalizeEmail({ gmail_remove_dots: false }),
     body("password")
       .isLength({ min: 8 })
       .withMessage("Please enter a valid password!")
