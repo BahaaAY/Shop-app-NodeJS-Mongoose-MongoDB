@@ -78,7 +78,7 @@ exports.postSignup = (req, res, next) => {
         });
       })
       .catch((err) => {
-        console.log("Error while hashing the password: ", err);
+        return throwError(err, 500, next);
       });
   }
 };
@@ -178,7 +178,7 @@ exports.postLogin = (req, res, next) => {
           });
       })
       .catch((err) => {
-        console.log(err);
+        return throwError(err, 500, next);
       });
   }
 };
@@ -236,15 +236,14 @@ exports.postReset = (req, res, next) => {
               res.redirect("/reset");
             })
             .catch((err) => {
-              // save the user
-              console.log(err);
+              return throwError(err, 500, next);
             });
         } else {
           res.redirect("/reset");
         }
       })
       .catch((err) => {
-        console.log(err);
+        return throwError(err, 500, next);
       });
   });
 };
@@ -274,7 +273,7 @@ exports.getNewPassword = (req, res, next) => {
       });
     })
     .catch((err) => {
-      console.log(err);
+      return throwError(err, 500, next);
     });
 };
 
@@ -306,5 +305,7 @@ exports.postNewPassword = (req, res, next) => {
     .then((result) => {
       res.redirect("/login");
     })
-    .catch((err) => {});
+    .catch((err) => {
+      return throwError(err, 500, next);
+    });
 };

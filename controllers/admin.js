@@ -63,7 +63,7 @@ exports.postAddProduct = (req, res, next) => {
         res.redirect("/admin/products");
       })
       .catch((err) => {
-        console.log("Error Creating Proudct: ", err);
+        return throwError(err, 500, next);
       });
   }
 };
@@ -95,7 +95,7 @@ exports.getEditProduct = (req, res, next) => {
         }
       })
       .catch((err) => {
-        console.log(err);
+        return throwError(err, 500, next);
       });
   } else {
     res.redirect("/");
@@ -145,7 +145,7 @@ exports.postEditProduct = (req, res, next) => {
       })
 
       .catch((err) => {
-        console.log(err);
+        return throwError(err, 500, next);
       });
   }
 };
@@ -159,7 +159,7 @@ exports.postDeleteProduct = (req, res, next) => {
       res.redirect("/admin/products");
     })
     .catch((err) => {
-      console.log(err);
+      return throwError(err, 500, next);
     });
 };
 
@@ -176,6 +176,6 @@ exports.getProducts = (req, res, next) => {
       });
     })
     .catch((err) => {
-      console.log(err);
+      return throwError(err, 500, next);
     });
 };

@@ -34,5 +34,13 @@ const getProductErrorMsg = (errors) => {
     return null;
   }
 };
+
+const throwError = (err, status, next) => {
+  const error = new Error(err);
+  error.httpStatusCode = status;
+  return next(error);
+};
+
+exports.throwError = throwError;
 exports.getProductErrorMsg = getProductErrorMsg;
 exports.calculateTotal = calculateTotal;

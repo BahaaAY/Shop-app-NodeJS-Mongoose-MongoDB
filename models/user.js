@@ -80,7 +80,7 @@ userSchema.methods.addOrder = function () {
     .then((result) => {
       return this.clearCart();
     })
-    .catch((err) => console.log(err));
+    .catch((err) => console.log("Error Adding Order: ", err));
 };
 userSchema.methods.clearCart = function () {
   let updatedCart = { items: [] };

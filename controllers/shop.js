@@ -13,7 +13,7 @@ exports.getProducts = (req, res, next) => {
         path: "/products",
       });
     })
-    .catch((err) => console.log("Error Fetch All:", err));
+    .catch((err) => throwError(err, 500));
 };
 
 exports.getProduct = (req, res, next) => {
@@ -26,7 +26,7 @@ exports.getProduct = (req, res, next) => {
         product: product,
       });
     })
-    .catch((err) => console.log("Error Fetch One:", err));
+    .catch((err) => throwError(err, 500));
 };
 
 exports.getIndex = (req, res, next) => {
@@ -38,7 +38,7 @@ exports.getIndex = (req, res, next) => {
         path: "/",
       });
     })
-    .catch((err) => console.log("Error Fetch All:", err));
+    .catch((err) => throwError(err, 500));
 };
 
 exports.getCart = (req, res, next) => {
@@ -55,7 +55,7 @@ exports.getCart = (req, res, next) => {
       });
     })
     .catch((err) => {
-      console.log("Error Getting Cart!: ", err);
+      return throwError(err, 500, next);
     });
 };
 exports.postAddToCart = (req, res, next) => {
@@ -70,7 +70,7 @@ exports.postAddToCart = (req, res, next) => {
       console.log("Product Added to Cart!");
       res.redirect("/cart");
     })
-    .catch((err) => console.log("Product Not Found: ", err));
+    .catch((err) => throwError(err, 500));
 };
 
 exports.postDeleteCartItem = (req, res, next) => {
@@ -83,7 +83,7 @@ exports.postDeleteCartItem = (req, res, next) => {
       res.redirect("/cart");
     })
     .catch((err) => {
-      console.log("Error: ", err);
+      return throwError(err, 500, next);
     });
 };
 
@@ -101,7 +101,7 @@ exports.getOrders = (req, res, next) => {
       });
     })
     .catch((err) => {
-      console.log("Error: ", err);
+      return throwError(err, 500, next);
     });
 };
 
@@ -114,7 +114,7 @@ exports.postOrder = (req, res, next) => {
       res.redirect("/orders");
     })
     .catch((err) => {
-      console.log("Error: ", err);
+      return throwError(err, 500, next);
     });
 };
 
