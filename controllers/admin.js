@@ -24,11 +24,12 @@ exports.getAddProduct = (req, res, next) => {
 //Done with MongoDB
 exports.postAddProduct = (req, res, next) => {
   const title = req.body.title;
-  const imageUrl = req.file;
+  const image = req.file;
   const price = req.body.price;
   const description = req.body.description;
-  console.log("Image: ", imageUrl);
+  console.log("Image: ", image);
   let errors = validationResult(req);
+
   if (!errors.isEmpty()) {
     console.log("Errors: ", errors.array());
     return res.status(422).render("admin/add-product", {
@@ -39,7 +40,6 @@ exports.postAddProduct = (req, res, next) => {
       activeAddProduct: true,
       oldInput: {
         title: title,
-        imageUrl: imageUrl,
         price: price,
         description: description,
       },
@@ -49,23 +49,42 @@ exports.postAddProduct = (req, res, next) => {
   } else {
     // Data is valid
     console.log("No Errors!");
-
-    let product = new Product({
-      title: title,
-      description: description,
-      price: price,
-      imageUrl: imageUrl,
-      userId: req.user,
-    });
-    product
-      .save()
-      .then((result) => {
-        console.log("Product Created!");
-        res.redirect("/admin/products");
-      })
-      .catch((err) => {
-        return throwError(err, 500, next);
+    if (image) {
+      console.log("Image is valid!");
+      const imageUrl = image.path;
+      console.log("Image URL: ", imageUrl);
+      let product = new Product({
+        title: title,
+        description: description,
+        price: price,
+        imageUrl: imageUrl,
+        userId: req.user,
       });
+      product
+        .save()
+        .then((result) => {
+          console.log("Product Created!");
+          res.redirect("/admin/products");
+        })
+        .catch((err) => {
+          return throwError(err, 500, next);
+        });
+    } else {
+      return res.status(422).render("admin/add-product", {
+        pageTitle: "Add Product",
+        path: "/admin/add-product",
+        formsCSS: true,
+        productCSS: true,
+        activeAddProduct: true,
+        oldInput: {
+          title: title,
+          price: price,
+          description: description,
+        },
+        errorMessage: "Attached file is not an image!",
+        validationErrors: [],
+      });
+    }
   }
 };
 
