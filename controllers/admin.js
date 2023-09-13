@@ -1,7 +1,7 @@
 const { validationResult } = require("express-validator");
 
 const Product = require("../models/product");
-
+const throwError = require("../util/functions").throwError;
 const getProductErrorMsg = require("../util/functions").getProductErrorMsg;
 //Done with MongoDB
 exports.getAddProduct = (req, res, next) => {
@@ -24,9 +24,10 @@ exports.getAddProduct = (req, res, next) => {
 //Done with MongoDB
 exports.postAddProduct = (req, res, next) => {
   const title = req.body.title;
-  const imageUrl = req.body.imageUrl;
+  const imageUrl = req.file;
   const price = req.body.price;
   const description = req.body.description;
+  console.log("Image: ", imageUrl);
   let errors = validationResult(req);
   if (!errors.isEmpty()) {
     console.log("Errors: ", errors.array());

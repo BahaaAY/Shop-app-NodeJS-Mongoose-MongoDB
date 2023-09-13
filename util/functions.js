@@ -41,6 +41,19 @@ const throwError = (err, status, next) => {
   return next(error);
 };
 
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
+exports.fileFilter = fileFilter;
 exports.throwError = throwError;
 exports.getProductErrorMsg = getProductErrorMsg;
 exports.calculateTotal = calculateTotal;
