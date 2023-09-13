@@ -47,8 +47,11 @@ const fileFilter = (req, file, cb) => {
     file.mimetype === "image/jpg" ||
     file.mimetype === "image/jpeg"
   ) {
+    console.log("Filter : Correct file type");
     cb(null, true);
   } else {
+    console.log("Filter : Invalid file type");
+    req.fileValidationError = "Invalid file type";
     cb(null, false);
   }
 };

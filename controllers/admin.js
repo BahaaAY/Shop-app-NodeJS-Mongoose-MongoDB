@@ -126,47 +126,139 @@ exports.postEditProduct = (req, res, next) => {
   console.log("PostEdit");
   const productID = req.body.productID;
   const newTitle = req.body.title;
-  const newImgUrl = req.body.imageUrl;
+  const newImg = req.file;
+  const oldImg = req.body.oldImg;
   const newPrice = req.body.price;
   const newDesc = req.body.description;
   let errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    console.log("Errors: ", errors.array());
-    return res.status(422).render("admin/edit-product", {
-      pageTitle: "Edit Product",
-      path: "/admin/edit-product",
-      formsCSS: true,
-      productCSS: true,
-      oldInput: {
-        _id: productID,
-        title: newTitle,
-        imageUrl: newImgUrl,
-        price: newPrice,
-        description: newDesc,
-      },
-      errorMessage: getProductErrorMsg(errors),
-      validationErrors: errors.array(),
-    });
-  } else {
-    Product.findById(productID)
-      .then((product) => {
-        if (product.userId.toString() !== req.user._id.toString()) {
-          return res.redirect("/");
-        } else {
-          product.title = newTitle;
-          product.imageUrl = newImgUrl;
-          product.price = newPrice;
-          product.description = newDesc;
-          return product.save().then((result) => {
-            console.log("Product Updated!");
-            res.redirect("/admin/products");
-          });
-        }
-      })
-
-      .catch((err) => {
-        return throwError(err, 500, next);
+  if (newImg) {
+    if (!errors.isEmpty()) {
+      console.log("Errors: ", errors.array());
+      return res.status(422).render("admin/edit-product", {
+        pageTitle: "Edit Product",
+        path: "/admin/edit-product",
+        formsCSS: true,
+        productCSS: true,
+        oldInput: {
+          _id: productID,
+          title: newTitle,
+          imageUrl: newImg.path,
+          price: newPrice,
+          description: newDesc,
+        },
+        errorMessage: getProductErrorMsg(errors),
+        validationErrors: errors.array(),
       });
+    } else {
+      // Data is valid
+      // save product with new image
+      Product.findById(productID)
+        .then((product) => {
+          if (product.userId.toString() !== req.user._id.toString()) {
+            return res.redirect("/");
+          } else {
+            product.title = newTitle;
+            product.imageUrl = "/" + newImg.path;
+            product.price = newPrice;
+            product.description = newDesc;
+            return product.save().then((result) => {
+              console.log("Product Updated!");
+              res.redirect("/admin/products");
+            });
+          }
+        })
+
+        .catch((err) => {
+          return throwError(err, 500, next);
+        });
+    }
+  } else {
+    if (oldImg) {
+      // no new image keep old image
+      console.log("No new image");
+      console.log("File Validation Error: ", req.fileValidationError);
+
+      if (req.fileValidationError) {
+        //user tried to upload invalid file type
+        return res.status(422).render("admin/edit-product", {
+          pageTitle: "Edit Product",
+          path: "/admin/edit-product",
+          formsCSS: true,
+          productCSS: true,
+          oldInput: {
+            _id: productID,
+            title: newTitle,
+            imageUrl: oldImg,
+            price: newPrice,
+            description: newDesc,
+          },
+          errorMessage: "Invalid image file!",
+          validationErrors: [],
+        });
+      } else {
+        //user did not upload new image at all
+        // use old image
+
+        if (!errors.isEmpty()) {
+          // Data is invalid
+          console.log("Errors: ", errors.array());
+          return res.status(422).render("admin/edit-product", {
+            pageTitle: "Edit Product",
+            path: "/admin/edit-product",
+            formsCSS: true,
+            productCSS: true,
+            oldInput: {
+              _id: productID,
+              title: newTitle,
+              imageUrl: oldImg,
+              price: newPrice,
+              description: newDesc,
+            },
+            errorMessage: getProductErrorMsg(errors),
+            validationErrors: errors.array(),
+          });
+        } else {
+          // Data is valid
+          // save product with old image
+          Product.findById(productID)
+            .then((product) => {
+              if (product.userId.toString() !== req.user._id.toString()) {
+                return res.redirect("/");
+              } else {
+                product.title = newTitle;
+                product.imageUrl = oldImg;
+                product.price = newPrice;
+                product.description = newDesc;
+                return product.save().then((result) => {
+                  console.log("Product Updated!");
+                  res.redirect("/admin/products");
+                });
+              }
+            })
+
+            .catch((err) => {
+              return throwError(err, 500, next);
+            });
+        }
+      }
+    } else {
+      // no old image and no new image
+      return res.status(422).render("admin/edit-product", {
+        pageTitle: "Edit Product",
+        path: "/admin/edit-product",
+        formsCSS: true,
+        productCSS: true,
+        oldInput: {
+          _id: productID,
+          title: newTitle,
+          price: newPrice,
+          imageUrl: oldImg,
+          description: newDesc,
+        },
+        errorMessage: "Invalid image file!",
+        validationErrors: [],
+      });
+    }
   }
 };
 
