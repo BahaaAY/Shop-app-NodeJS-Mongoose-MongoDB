@@ -51,7 +51,7 @@ exports.postAddProduct = (req, res, next) => {
     console.log("No Errors!");
     if (image) {
       console.log("Image is valid!");
-      const imageUrl = image.path;
+      const imageUrl = "/" + image.path;
       console.log("Image URL: ", imageUrl);
       let product = new Product({
         title: title,
