@@ -1,5 +1,5 @@
 const { validationResult } = require("express-validator");
-
+const fs = require("fs");
 const Product = require("../models/product");
 const throwError = require("../util/functions").throwError;
 const getProductErrorMsg = require("../util/functions").getProductErrorMsg;
@@ -162,6 +162,13 @@ exports.postEditProduct = (req, res, next) => {
             product.price = newPrice;
             product.description = newDesc;
             return product.save().then((result) => {
+              fs.unlink(oldImg.slice(1), (err) => {
+                if (err) {
+                  console.log("Error Deleting Old Image: ", err);
+                } else {
+                  console.log("Old Image Deleted!");
+                }
+              });
               console.log("Product Updated!");
               res.redirect("/admin/products");
             });
@@ -265,9 +272,17 @@ exports.postEditProduct = (req, res, next) => {
 exports.postDeleteProduct = (req, res, next) => {
   const productID = req.body.productID;
   console.log("deletion id: ", productID);
-  Product.deleteOne({ _id: productID, userId: req.user._id })
-    .then((result) => {
-      console.log("Product Deleted!: ", result);
+
+  Product.findOneAndDelete({ _id: productID, userId: req.user._id })
+    .then((product) => {
+      console.log("Product Deleted!: ", product);
+      fs.unlink(product.imageUrl.slice(1), (err) => {
+        if (err) {
+          console.log("Error Deleting Old Image: ", err);
+        } else {
+          console.log("Old Image Deleted!");
+        }
+      });
       res.redirect("/admin/products");
     })
     .catch((err) => {
