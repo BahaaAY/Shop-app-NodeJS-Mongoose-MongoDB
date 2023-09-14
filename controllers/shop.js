@@ -1,5 +1,6 @@
 const calculateTotal = require("../util/functions").calculateTotal;
-
+const path = require("path");
+const fs = require("fs");
 const Product = require("../models/product");
 const User = require("../models/user");
 
@@ -130,5 +131,20 @@ exports.getCheckout = (req, res, next) => {
   res.render("shop/checkout", {
     path: "/checkout",
     pageTitle: "Checkout",
+  });
+};
+
+exports.getInvoice = (req, res, next) => {
+  const orderID = req.params.orderID;
+  const invoiceName = `invoice-${orderID}.pdf`;
+  const invoicePath = path.join("data", "invoices", invoiceName);
+  fs.readFile(invoicePath, (err, data) => {
+    if (err) {
+      return throwError(err, 500, next);
+    } else {
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", `inline; filename="${invoiceName}"`);
+      return res.send(data);
+    }
   });
 };
