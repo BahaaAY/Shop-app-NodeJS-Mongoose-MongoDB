@@ -2,6 +2,8 @@ const calculateTotal = require("../util/functions").calculateTotal;
 
 const Product = require("../models/product");
 const User = require("../models/user");
+
+const throwError = require("../util/functions").throwError;
 // const Cart = require('../models/cart');
 
 exports.getProducts = (req, res, next) => {
@@ -91,14 +93,20 @@ exports.getOrders = (req, res, next) => {
   req.user
     .getOrders()
     .then((orders) => {
-      if (!orders) {
+      if (orders.length <= 0) {
+        res.render("shop/orders", {
+          path: "/orders",
+          pageTitle: "Your Orders",
+          orders: [],
+        });
+      } else {
+        console.log("Orders:adssda ", orders[0].items[0]);
+        res.render("shop/orders", {
+          path: "/orders",
+          pageTitle: "Your Orders",
+          orders: orders,
+        });
       }
-      console.log("Orders:adssda ", orders[0].items[0]);
-      res.render("shop/orders", {
-        path: "/orders",
-        pageTitle: "Your Orders",
-        orders: orders,
-      });
     })
     .catch((err) => {
       return throwError(err, 500, next);
