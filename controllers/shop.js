@@ -147,18 +147,25 @@ exports.getInvoice = (req, res, next) => {
       } else {
         const invoiceName = `invoice-${orderID}.pdf`;
         const invoicePath = path.join("data", "invoices", invoiceName);
-        fs.readFile(invoicePath, (err, data) => {
-          if (err) {
-            return throwError(err, 500, next);
-          } else {
-            res.setHeader("Content-Type", "application/pdf");
-            res.setHeader(
-              "Content-Disposition",
-              `inline; filename="${invoiceName}"`
-            );
-            return res.send(data);
-          }
-        });
+        // fs.readFile(invoicePath, (err, data) => {
+        //   if (err) {
+        //     return throwError(err, 500, next);
+        //   } else {
+        //     res.setHeader("Content-Type", "application/pdf");
+        //     res.setHeader(
+        //       "Content-Disposition",
+        //       `inline; filename="${invoiceName}"`
+        //     );
+        //     return res.send(data);
+        //   }
+        // });
+        const file = fs.createReadStream(invoicePath); //steam file instead of preloading it
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader(
+          "Content-Disposition",
+          `inline; filename="${invoiceName}"`
+        );
+        return file.pipe(res);
       }
     })
     .catch((err) => {
