@@ -100,7 +100,7 @@ app.use(authRoutes);
 app.use(errorController.get404);
 app.use((error, req, res, next) => {
   console.log("Error:", error);
-  res.status(500).render("500", {
+  res.status(error.httpStatusCode ? error.httpStatusCode : 500).render("500", {
     pageTitle: "Page Not Found",
     path: "/404",
   });

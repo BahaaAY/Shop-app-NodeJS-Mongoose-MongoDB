@@ -3,6 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const Product = require("../models/product");
 const User = require("../models/user");
+const Order = require("../models/order");
 
 const throwError = require("../util/functions").throwError;
 // const Cart = require('../models/cart');
@@ -136,15 +137,31 @@ exports.getCheckout = (req, res, next) => {
 
 exports.getInvoice = (req, res, next) => {
   const orderID = req.params.orderID;
-  const invoiceName = `invoice-${orderID}.pdf`;
-  const invoicePath = path.join("data", "invoices", invoiceName);
-  fs.readFile(invoicePath, (err, data) => {
-    if (err) {
+  Order.findById(orderID)
+    .then((order) => {
+      if (!order) {
+        return throwError("No order found", 404, next);
+      }
+      if (order.user.userId.toString() !== req.user._id.toString()) {
+        return throwError("Unauthorized", 403, next);
+      } else {
+        const invoiceName = `invoice-${orderID}.pdf`;
+        const invoicePath = path.join("data", "invoices", invoiceName);
+        fs.readFile(invoicePath, (err, data) => {
+          if (err) {
+            return throwError(err, 500, next);
+          } else {
+            res.setHeader("Content-Type", "application/pdf");
+            res.setHeader(
+              "Content-Disposition",
+              `inline; filename="${invoiceName}"`
+            );
+            return res.send(data);
+          }
+        });
+      }
+    })
+    .catch((err) => {
       return throwError(err, 500, next);
-    } else {
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader("Content-Disposition", `inline; filename="${invoiceName}"`);
-      return res.send(data);
-    }
-  });
+    });
 };
