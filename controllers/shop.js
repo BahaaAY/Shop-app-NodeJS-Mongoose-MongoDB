@@ -1,6 +1,10 @@
 const calculateTotal = require("../util/functions").calculateTotal;
 const path = require("path");
+
 const fs = require("fs");
+
+const PDFDocument = require("pdfkit");
+
 const Product = require("../models/product");
 const User = require("../models/user");
 const Order = require("../models/order");
@@ -147,6 +151,35 @@ exports.getInvoice = (req, res, next) => {
       } else {
         const invoiceName = `invoice-${orderID}.pdf`;
         const invoicePath = path.join("data", "invoices", invoiceName);
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader(
+          "Content-Disposition",
+          `inline; filename="${invoiceName}"`
+        );
+        var doc = new PDFDocument();
+        doc.pipe(fs.createWriteStream(invoicePath));
+        doc.pipe(res);
+        doc.fontSize(26).text("Invoice", {
+          underline: true,
+        });
+        doc.fontSize(14).text("Order ID: #" + orderID, {});
+        doc.fontSize(20).text("-----------------------");
+
+        order.items.forEach((item) => {
+          doc.text(
+            item.product.title +
+              " - " +
+              item.quantity +
+              " x " +
+              item.product.price +
+              "$"
+          );
+        });
+        doc.fontSize(20).text("-----------------------");
+        doc.fontSize(18).text("Total: $" + order.totalPrice);
+
+        return doc.end();
+
         // fs.readFile(invoicePath, (err, data) => {
         //   if (err) {
         //     return throwError(err, 500, next);
@@ -159,13 +192,9 @@ exports.getInvoice = (req, res, next) => {
         //     return res.send(data);
         //   }
         // });
-        const file = fs.createReadStream(invoicePath); //steam file instead of preloading it
-        res.setHeader("Content-Type", "application/pdf");
-        res.setHeader(
-          "Content-Disposition",
-          `inline; filename="${invoiceName}"`
-        );
-        return file.pipe(res);
+        // const file = fs.createReadStream(invoicePath); //steam file instead of preloading it
+
+        // return file.pipe(res);
       }
     })
     .catch((err) => {
