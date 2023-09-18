@@ -247,6 +247,31 @@ form {
   background: rgb(255, 176, 176);
   color: red;
 }
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pagination a {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  margin: 0 0.25rem;
+  border: 1px solid #00695c;
+  color: #00695c;
+  text-decoration: none;
+  background: white;
+  border-radius: 3px;
+}
+.pagination a:hover,
+.pagination a:active,
+.pagination a.active {
+  background-color: #00695c;
+  color: white;
+}
 
 @media (min-width: 768px) {
   .main-header__nav {

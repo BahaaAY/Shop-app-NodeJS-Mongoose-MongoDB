@@ -9,19 +9,36 @@ const Product = require("../models/product");
 const User = require("../models/user");
 const Order = require("../models/order");
 
+const PRODUCTS_PER_PAGE = 2;
+
 const throwError = require("../util/functions").throwError;
 // const Cart = require('../models/cart');
 
 exports.getProducts = (req, res, next) => {
+  const page = +req.query.page || 1;
+  let productsCount = 0;
   Product.find()
+    .countDocuments()
+    .then((numProducts) => {
+      productsCount = numProducts;
+      return Product.find()
+        .skip((page - 1) * PRODUCTS_PER_PAGE)
+        .limit(PRODUCTS_PER_PAGE);
+    })
     .then((products) => {
       res.render("shop/product-list", {
         prods: products,
         pageTitle: "All Products",
         path: "/products",
+        currentPage: page,
+        hasNextPage: PRODUCTS_PER_PAGE * page < productsCount,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(productsCount / PRODUCTS_PER_PAGE),
       });
     })
-    .catch((err) => throwError(err, 500));
+    .catch((err) => throwError(err, 500, next));
 };
 
 exports.getProduct = (req, res, next) => {
@@ -38,15 +55,30 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
+  const page = +req.query.page || 1;
+  let productsCount = 0;
   Product.find()
+    .countDocuments()
+    .then((numProducts) => {
+      productsCount = numProducts;
+      return Product.find()
+        .skip((page - 1) * PRODUCTS_PER_PAGE)
+        .limit(PRODUCTS_PER_PAGE);
+    })
     .then((products) => {
       res.render("shop/index", {
         prods: products,
         pageTitle: "Shop",
         path: "/",
+        currentPage: page,
+        hasNextPage: PRODUCTS_PER_PAGE * page < productsCount,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(productsCount / PRODUCTS_PER_PAGE),
       });
     })
-    .catch((err) => throwError(err, 500));
+    .catch((err) => throwError(err, 500, next));
 };
 
 exports.getCart = (req, res, next) => {
