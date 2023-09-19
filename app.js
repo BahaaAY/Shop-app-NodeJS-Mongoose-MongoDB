@@ -10,7 +10,15 @@ const MongoDBStore = require("connect-mongodb-session")(session);
 const csrfSync = require("csrf-sync").csrfSync;
 
 const { csrfSynchronisedProtection } = csrfSync({
-  getTokenFromRequest: (req) => req.body.csrfToken,
+  getTokenFromRequest: (req) => {
+    // If NOT delete/get request, we have a body
+    // to retrieve the token from
+    if (!/get|delete/i.test(req.method)) {
+      return req.body["csrfToken"];
+    }
+    // get/delete request, get csrf from headers
+    return req.headers["csrf-token"];
+  },
 });
 const username = require("./util/credentials").username;
 const password = require("./util/credentials").password;

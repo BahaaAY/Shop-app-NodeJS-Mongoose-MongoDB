@@ -269,8 +269,8 @@ exports.postEditProduct = (req, res, next) => {
   }
 };
 
-exports.postDeleteProduct = (req, res, next) => {
-  const productID = req.body.productID;
+exports.deleteProduct = (req, res, next) => {
+  const productID = req.params.productID;
   console.log("deletion id: ", productID);
 
   Product.findOneAndDelete({ _id: productID, userId: req.user._id })
@@ -283,7 +283,8 @@ exports.postDeleteProduct = (req, res, next) => {
           console.log("Old Image Deleted!");
         }
       });
-      res.redirect("/admin/products");
+      // res.redirect("/admin/products");
+      res.status(200).json({ message: "Success!" });
     })
     .catch((err) => {
       return throwError(err, 500, next);
