@@ -7,6 +7,8 @@ const session = require("express-session");
 const flash = require("connect-flash");
 const MongoDBStore = require("connect-mongodb-session")(session);
 
+const helmet = require("helmet");
+
 const csrfSync = require("csrf-sync").csrfSync;
 
 const { csrfSynchronisedProtection } = csrfSync({
@@ -54,6 +56,7 @@ const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
 
+app.use(helmet());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
   multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
