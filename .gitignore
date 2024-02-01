@@ -1,3 +1,5 @@
 node_modules/
 util/credentials.js
 images/
+.DS_Store
+nodemon.json

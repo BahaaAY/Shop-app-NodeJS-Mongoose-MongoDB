@@ -20,8 +20,9 @@ const { csrfSynchronisedProtection } = csrfSync({
     return req.headers["csrf-token"];
   },
 });
-const username = require("./util/credentials").username;
-const password = require("./util/credentials").password;
+const username = process.env.MONGO_USER;
+const password = process.env.MONGO_PASS;
+const dbName = process.env.MONGO_DB_NAME;
 
 const errorController = require("./controllers/error");
 const throwError = require("./util/functions").throwError;
@@ -30,7 +31,7 @@ const User = require("./models/user");
 
 const app = express();
 
-const MONGODB_URI = `mongodb+srv://${username}:${password}@cluster0.o8mxmhh.mongodb.net/shop`;
+const MONGODB_URI = `mongodb+srv://${username}:${password}@cluster0.o8mxmhh.mongodb.net/${dbName}`;
 
 const store = new MongoDBStore({
   uri: MONGODB_URI,
